@@ -1,2 +1,3 @@
 goerli/data
 geth.pid
+*.log
