@@ -6,10 +6,11 @@ gth=$(which geth)
 
 data_dir="$(pwd)/data"
 ipc_path="$data_dir/goerli/goerli.ipc"
-logfile="$(pwd)/logs/goerli.log"
+logfile=~/Library/Logs/goerli.log
 #cfg="$(pwd)/config/goerli.toml"
 
-rm $logfile
+echo $logfile
+touch $logfile
 
 #metrics standalone uri http://<metrics.addr>:<metrics.port>:/debug/metrics
 
@@ -26,3 +27,8 @@ gth_pid=$(<geth.pid)
 echo "pid=$gth_pid"
 
 disown -h $gth_pid 
+
+
+echo "logger pid: $!"
+tail -f $logfile | logger -t blockchain &
+disown -h $!
