@@ -25,10 +25,26 @@ echo $!>geth.pid
 
 gth_pid=$(<geth.pid)
 echo "pid=$gth_pid"
-
 disown -h $gth_pid 
 
 
-echo "logger pid: $!"
-tail -f $logfile | logger -t blockchain &
+( tail -f $logfile | logger -t blockchain )  &
+log_pid=$!
+echo "logger pid=$log_pid"
+disown -h $log_pid
+
+function check_process(){
+ 
+    local p=$1
+    echo "check process with pid=$p"
+ 
+    while (kill -0 $p && test $? -eq 0);
+    do
+        sleep 1
+    done
+}
+
+( check_process $gth_pid && echo "gth process exited $gth_pid, now kill logger log_pid=$log_pid"; pkill -P  $log_pid) &
+echo "background check pid=$!"
 disown -h $!
+
